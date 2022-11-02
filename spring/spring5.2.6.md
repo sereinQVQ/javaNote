@@ -49,7 +49,7 @@
 
 ##### IOC操作Bean管理（概念）
 
-> **1.什么是Bean管理**
+> ##### 1.什么是Bean管理
 >
 > （1）Bean管理指的是两个操作
 >
@@ -57,7 +57,7 @@
 >
 > （3）Spring注入属性
 >
-> **2.Bean管理操作有两种方式**
+> ##### 2.Bean管理操作有两种方式
 >
 > （1）基于xml配置文件方式实现
 >
@@ -79,7 +79,7 @@
 >
 > 创建对象的时候，默认执行无参构造方法完成对象创建
 >
-> **2、基于xml方式注入属性**
+> ##### 3、基于xml方式注入属性
 >
 > （1）DI：依赖注入，就是注入属性
 >
@@ -114,7 +114,7 @@
 > > <bean id="orders" class="com.atguigu.spring5.Orders" p:oname="111" p:address="222"></bean> 
 > > ```
 >
-> **IOC操作Bean管理（xml注入其他类型属性 null 和 特殊符号)**
+> ##### 4.xml注入其他类型属性 null 和 特殊符号
 >
 > ```xml
 >     <bean id="orders" class="com.atguigu.spring5.Orders">
@@ -126,8 +126,192 @@
 >     </bean>
 > ```
 >
-> 
+> ##### 5.注入属性-外部bean
+>
+> ```xml
+> <!--1 service和dao对象创建-->
+> <bean id="userService" class="com.atguigu.spring5.service.UserService">
+>     <!--注入userDao对象
+>         name属性：类里面属性名称
+>         ref属性：创建userDao对象bean标签id值
+>     -->
+>     <property name="userDao" ref="userDaoImpl"></property>
+> </bean>
+> <bean id="userDaoImpl" class="com.atguigu.spring5.dao.UserDaoImpl"></bean>
+> ```
 >
 > 
 >
+>  ##### 6、基于XML方式注入内部bean和级联赋值
+>
+> a）注入属性-内部bean
+>
+> > （1）一对多关系：部门和员工
+> > 一个部门有多个员工，一个员工属于一个部门（部门是一，员工是多）
+> > （2）在实体类之间表示一对多关系，员工表示所属部门，使用对象类型属性进行表示
+>
+> ```xml
+> <!--内部bean-->
+>     <bean id="emp" class="com.atguigu.spring5.bean.Emp">
+>         <!--设置两个普通属性-->
+>         <property name="ename" value="Andy"></property>
+>         <property name="gender" value="女"></property>
+>         <!--设置对象类型属性-->
+>         <property name="dept">
+>             <bean id="dept" class="com.atguigu.spring5.bean.Dept"><!--内部bean赋值-->
+>                 <property name="dname" value="宣传部门"></property>
+>             </bean>
+>         </property>
+>     </bean>
+> 
+> ```
+>
+>  b）注入属性-级联赋值
+>
+> ```xml
+> <!--方式一：级联赋值-->
+>     <bean id="emp" class="com.atguigu.spring5.bean.Emp">
+>         <!--设置两个普通属性-->
+>         <property name="ename" value="Andy"></property>
+>         <property name="gender" value="女"></property>
+>         <!--级联赋值-->
+>         <property name="dept" ref="dept"></property>
+>     </bean>
+>     <bean id="dept" class="com.atguigu.spring5.bean.Dept">
+>         <property name="dname" value="公关部门"></property>
+>     </bean>
+> 
+> 
+>  <!--级联赋值-->
+>     <bean id="emp" class="com.atguigu.spring5.bean.Emp">
+>         <!--设置两个普通属性-->
+>         <property name="ename" value="jams"></property>
+>         <property name="gender" value="男"></property>
+>         <!--级联赋值-->
+>         <property name="dept" ref="dept"></property>
+>         <property name="dept.dname" value="技术部门"></property>
+>     </bean>
+>     <bean id="dept" class="com.atguigu.spring5.bean.Dept">
+>     </bean>
+> 
+> ```
+>
+>  ##### 7、IOC 操作 Bean 管理——xml 注入集合属性
+>
+> ```xml
+> <!--（2）在 spring 配置文件进行配置-->
+>     <bean id="stu" class="com.atguigu.spring5.collectiontype.Stu">
+>         <!--数组类型属性注入-->
+>         <property name="courses">
+>             <array>
+>                 <value>java课程</value>
+>                 <value>数据库课程</value>
+>             </array>
+>         </property>
+>         <!--list类型属性注入-->
+>         <property name="list">
+>             <list>
+>                 <value>张三</value>
+>                 <value>小三</value>
+>             </list>
+>         </property>
+>         <!--map类型属性注入-->
+>         <property name="maps">
+>             <map>
+>                 <entry key="JAVA" value="java"></entry>
+>                 <entry key="PHP" value="php"></entry>
+>             </map>
+>         </property>
+>         <!--set类型属性注入-->
+>         <property name="sets">
+>             <set>
+>                 <value>MySQL</value>
+>                 <value>Redis</value>
+>             </set>
+>         </property>
+> </bean>
+> ```
+>
+>  ##### 8、在集合里面设置对象类型值
+>
+> ```xml
+> <!--第一种方式-->
+>     <!--创建多个course对象-->
+>     <bean id="course1" class="com.atguigu.spring5.collectiontype.Course">
+>         <property name="cname" value="Spring5框架"></property>
+>     </bean>
+>     <bean id="course2" class="com.atguigu.spring5.collectiontype.Course">
+>         <property name="cname" value="MyBatis框架"></property>
+>     </bean>
+>     
+>    	<!--注入list集合类型，值是对象-->
+>        <property name="courseList">
+>            <list>
+>                <ref bean="course1"></ref>
+>                <ref bean="course2"></ref>
+>            </list>
+>        </property>
+> 
+> <!--第二种方式-->
+> 
+> <!--第一步：在 spring 配置文件中引入名称空间 util-->
+> <?xml version="1.0" encoding="UTF-8"?>
+> <beans xmlns="http://www.springframework.org/schema/beans"
+>        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>        xmlns:util="http://www.springframework.org/schema/util" <!--添加util名称空间-->
+>        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+>                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">  <!--添加util名称空间-->
+>     
+> <!--第二步：使用 util 标签完成 list 集合注入提取-->
+> <!--把集合注入部分提取出来-->
+>  <!--1 提取list集合类型属性注入-->
+>     <util:list id="bookList">
+>         <value>易筋经</value>
+>         <value>九阴真经</value>
+>         <value>九阳神功</value>
+>     </util:list>
+> 
+>  <!--2 提取list集合类型属性注入使用-->
+>     <bean id="book" class="com.atguigu.spring5.collectiontype.Book" scope="prototype">
+>         <property name="list" ref="bookList"></property>
+>     </bean>
+> 
+> ```
+>
+> 
 
+
+
+
+
+### Bean作用域
+
+1. 在spring里面，设置创建bean实例是单实例还是多实例
+
+   默认单实例对象（只创建一次）
+
+2. 在spring里面，默认情况下，bean是一个单实例对象
+
+   ==scope==
+
+   ==第一个值 默认值，singleton ，表示单实例对象（单例模式）==
+
+   ==第二个值 prototype，表示多实例对象==
+
+3. singteton 和 prototype 区别
+
+   a）singleton 单实例，prototype 多实例
+
+    b）设置 scope 值是 singleton 时候，加载 spring 配置文件时候就会创建单实例对象 ；设置 scope 值是 prototype 时候，不是在加载 spring 配置文件时候创建对象，在调用 getBean 方法时候创建多实例对象
+
+   
+
+### Bean的生命周期
+
+解释：从对象创建到对象销毁的过程
+
+1. 通过构造器创建bean实例（无参数构造）
+2. 为bean的属性设置值和对其他bean引用（调用set方法）
+3. 调用bean初始化方法（需要进行配置初始化的方法）
+4. bean可以使用了（对象获取到了）
+5. 当容器关闭时候，调用bean的销毁的方法（需要进行配置销毁的方法）
